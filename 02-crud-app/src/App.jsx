@@ -1,101 +1,140 @@
-import { useState } from 'react';
-function App(){
-  const[students,setStudents]=useState([]);
-  const[formData,setFormData]= useState({
-    name:"",
-    roll:"",
-    branch:"",
+import { useState } from "react";
+
+function App() {
+  // =========================
+  // STATE
+  // =========================
+  const [students, setStudents] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    roll: "",
+    branch: "",
   });
-  const[editingStudentId,setEditingStudentId]=useState(null);
+  const [editingStudentId, setEditingStudentId] = useState(null);
 
-  const handleChange=(e)=>{
-    const{ name,value }=e.target;
-
+  // =========================
+  // HANDLE INPUT CHANGE
+  // =========================
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]:value,
+      [name]: value,
     });
-    };
+  };
 
-  const addStudent =(e)=>{
+  // =========================
+  // ADD + UPDATE STUDENT
+  // =========================
+  const handleSubmit = (e) => {
     e.preventDefault();
-     if(editingStudentId===null){
-    
-    const newStudent={
-      id:students.length+1,
-      name:formData.name,
-      roll:formData.roll,
-      branch:formData.branch,
-    };
-    setStudents([...students,newStudent])
-  }
-  else{
-    const updatedStudents = students.map((student)=>
-      student.id===editingStudentId?{ ...student, ...formData}:student
-    );
-    setStudents(updatedStudents);
-    setEditingStudentId(null);
-  }
+
+    if (editingStudentId === null) {
+      // ADD MODE
+      const newStudent = {
+        id: students.length + 1,
+        name: formData.name,
+        roll: formData.roll,
+        branch: formData.branch,
+      };
+      setStudents([...students, newStudent]);
+    } else {
+      // UPDATE MODE
+      const updatedStudents = students.map((student) =>
+        student.id === editingStudentId
+          ? { ...student, ...formData }
+          : student
+      );
+      setStudents(updatedStudents);
+      setEditingStudentId(null);
+    }
+
+    // Clear form
     setFormData({
-      name:"",
-      roll:"",
-      branch:"",
+      name: "",
+      roll: "",
+      branch: "",
     });
   };
-  const updateStudent =(student)=>{
-   setFormData({
-    name:student.name,
-    roll:student.roll,
-    branch:student.branch,
-   });
-   setEditingStudentId(student.id);
-  };
-  const deleteStudent =(id)=>{
-    const remainingStudents = students.filter((student)=>student.id!==id);
-  
-  setStudents(remainingStudents);
-  };
-  return(
-  <div>
-    <h1>Student CRUD APP</h1>
-    <p>Total students:{students.length}</p>
-    {/*FORM*/}
-  <form onSubmit={addStudent}>
-      <input 
-      type="text"
-      placeholder="Name"
-      name="name"
-      value={formData.name}
-      onChange={handleChange}
-      />
-      <input
-      type="text"
-      placeholder="RollNumber"
-      name="roll"
-      value={formData.roll}
-      onChange={handleChange}/>
-      <input
-      type="text"
-      placeholder="Branch"
-      name="branch"
-      value={formData.branch}
-      onChange={handleChange}
-      />
-      <button type="submit">{editingStudentId===null?"Add Student":"Update student"}Student</button>
-  </form>
 
+  // =========================
+  // EDIT STUDENT
+  // =========================
+  const editStudent = (student) => {
+    setFormData({
+      name: student.name,
+      roll: student.roll,
+      branch: student.branch,
+    });
+    setEditingStudentId(student.id);
+  };
 
-    {/*STUDENT LIST*/}
- <ul>
-  {students.map((student)=>(
-    <li key={student.id}>
-          {student.name}-{student.roll}-{student.branch}
-          <button onClick={()=>updateStudent(student)}>Edit</button>
-          <button onClick={()=>deleteStudent(student.id)}>Delete</button>
-    </li>
-  ))}
- </ul>
-  </div>
+  // =========================
+  // DELETE STUDENT
+  // =========================
+  const deleteStudent = (id) => {
+    const remainingStudents = students.filter(
+      (student) => student.id !== id
+    );
+    setStudents(remainingStudents);
+  };
+
+  // =========================
+  // UI
+  // =========================
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1>Student CRUD App</h1>
+      <p>Total students: {students.length}</p>
+
+      {/* FORM */}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Name"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+        />
+        <br /><br />
+
+        <input
+          type="text"
+          placeholder="Roll Number"
+          name="roll"
+          value={formData.roll}
+          onChange={handleChange}
+        />
+        <br /><br />
+
+        <input
+          type="text"
+          placeholder="Branch"
+          name="branch"
+          value={formData.branch}
+          onChange={handleChange}
+        />
+        <br /><br />
+
+        <button type="submit">
+          {editingStudentId === null ? "Add Student" : "Update Student"}
+        </button>
+      </form>
+
+      <hr />
+
+      {/* STUDENT LIST */}
+      <ul>
+        {students.map((student) => (
+          <li key={student.id}>
+            {student.name} - {student.roll} - {student.branch}{" "}
+            <button onClick={() => editStudent(student)}>Edit</button>{" "}
+            <button onClick={() => deleteStudent(student.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
+
 export default App;
